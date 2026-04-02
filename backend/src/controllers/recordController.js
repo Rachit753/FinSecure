@@ -60,3 +60,30 @@ export const getRecords = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const updateRecord = async (req, res) => {
+  try {
+    const record = await Record.findById(req.params.id);
+
+    if (!record) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    if (record.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to update this record" });
+    }
+
+    const updatedRecord = await Record.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { returnDocument: 'after' }
+    );
+
+    res.status(200).json({
+      message: "Record updated successfully",
+      record: updatedRecord,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
