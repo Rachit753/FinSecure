@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
+import { allowRoles } from "./middleware/roleMiddleware.js";
 
 const app = express();
 
@@ -19,5 +20,23 @@ app.get("/api/protected", protect, (req, res) => {
     user: req.user,
   });
 });
+
+app.get(
+  "/api/admin-only",
+  protect,
+  allowRoles("admin"),
+  (req, res) => {
+    res.json({ message: "Welcome Admin!" });
+  }
+);
+
+app.get(
+  "/api/analyst",
+  protect,
+  allowRoles("analyst", "admin"),
+  (req, res) => {
+    res.json({ message: "Welcome Analyst or Admin!" });
+  }
+);
 
 export default app;
