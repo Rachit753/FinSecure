@@ -35,6 +35,7 @@ export const getRecords = async (req, res) => {
 
     let filter = {
       user: req.user.id,
+      isDeleted: false,
     };
 
     if (type) filter.type = type;
@@ -113,7 +114,8 @@ export const deleteRecord = async (req, res) => {
       return res.status(403).json({ message: "Not authorized to delete this record" });
     }
 
-    await record.deleteOne();
+    record.isDeleted = true;
+    await record.save();
 
     res.status(200).json({
       message: "Record deleted successfully",
