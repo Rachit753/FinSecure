@@ -210,3 +210,22 @@ export const getMonthlyTrends = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getRecentActivity = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const limit = parseInt(req.query.limit) || 5;
+
+    const records = await Record.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .limit(limit);
+
+    res.status(200).json({
+      count: records.length,
+      records,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
