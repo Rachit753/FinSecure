@@ -31,7 +31,7 @@ export const createRecord = async (req, res) => {
 
 export const getRecords = async (req, res) => {
   try {
-    const { type, category, startDate, endDate, page = 1, limit = 5 } = req.query;
+    const { type, category, startDate, endDate, page = 1, limit = 5, search } = req.query;
 
     let filter = {
       user: req.user.id,
@@ -44,6 +44,13 @@ export const getRecords = async (req, res) => {
       filter.date = {};
       if (startDate) filter.date.$gte = new Date(startDate);
       if (endDate) filter.date.$lte = new Date(endDate);
+    }
+
+    if (search) {
+      filter.$or = [
+        { category: { $regex: search, $options: "i" } },
+        { notes: { $regex: search, $options: "i" } },
+      ];
     }
 
     const skip = (page - 1) * limit;
