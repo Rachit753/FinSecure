@@ -87,3 +87,25 @@ export const updateRecord = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteRecord = async (req, res) => {
+  try {
+    const record = await Record.findById(req.params.id);
+
+    if (!record) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    if (record.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to delete this record" });
+    }
+
+    await record.deleteOne();
+
+    res.status(200).json({
+      message: "Record deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
