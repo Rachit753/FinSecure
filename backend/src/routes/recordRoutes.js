@@ -17,6 +17,42 @@ import { allowRoles } from "../middleware/roleMiddleware.js";
 const router = express.Router();
 
 router.post("/", protect, allowRoles("admin"), createRecord);
+
+/**
+ * @swagger
+ * /api/records:
+ *   get:
+ *     summary: Get user records with filters and pagination
+ *     tags: [Records]
+ * 
+ *     security:
+ *       - bearerAuth: []  
+ * 
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: List of records
+ */
 router.get("/", protect, allowRoles("viewer", "analyst", "admin"), getRecords);
 router.put("/:id", protect, allowRoles("admin"), updateRecord);
 router.delete("/:id", protect, allowRoles("admin"), deleteRecord);
