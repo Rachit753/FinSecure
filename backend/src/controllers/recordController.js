@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Record from "../models/Record.js";
 
 export const createRecord = async (req, res) => {
@@ -134,6 +135,33 @@ export const getSummary = async (req, res) => {
       totalExpense,
       netBalance,
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getCategorySummary = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await Record.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(userId) },
+      },
+      {
+        $group: {
+          _id: "$category",
+          total: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const formatted = {};
+    result.forEach((item) => {
+      formatted[item._id] = item.total;
+    });
+
+    res.status(200).json(formatted);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

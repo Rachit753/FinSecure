@@ -1,6 +1,13 @@
 import express from "express";
 
-import { createRecord, getRecords, updateRecord, deleteRecord, getSummary} from "../controllers/recordController.js";
+import {
+    createRecord,
+    getRecords,
+    updateRecord,
+    deleteRecord,
+    getSummary,
+    getCategorySummary
+} from "../controllers/recordController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 import { allowRoles } from "../middleware/roleMiddleware.js";
@@ -16,6 +23,13 @@ router.get(
     protect,
     allowRoles("viewer", "analyst", "admin"),
     getSummary
+);
+
+router.get(
+    "/summary/category",
+    protect,
+    allowRoles("viewer", "analyst", "admin"),
+    getCategorySummary
 );
 
 export default router;
