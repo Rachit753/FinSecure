@@ -6,11 +6,15 @@ import recordRoutes from "./routes/recordRoutes.js";
 
 import { protect } from "./middleware/authMiddleware.js";
 import { allowRoles } from "./middleware/roleMiddleware.js";
+import { apiLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/api", apiLimiter);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/records", recordRoutes);
 
