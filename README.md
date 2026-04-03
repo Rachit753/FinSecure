@@ -9,12 +9,12 @@
 
 ## Screenshots
 
-| Swagger API Docs          | Auth APIs                 |
-| ------------------------- | ------------------------- |
-| ![](./docs/swagger.png)   | ![](./docs/swagger_1.png) |
+| Overview | Auth APIs |
+|----------|----------|
+| ![](./docs/swagger.png) | ![](./docs/swagger_1.png) |
 
-| Records API               | Analytics                 |
-| ------------------------- | ------------------------- |
+| Login Flow | Records API |
+|-----------|-------------|
 | ![](./docs/swagger_2.png) | ![](./docs/swagger_3.png) |
 
 ---
