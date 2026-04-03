@@ -109,3 +109,32 @@ export const deleteRecord = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getSummary = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const records = await Record.find({ user: userId });
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    records.forEach((record) => {
+      if (record.type === "income") {
+        totalIncome += record.amount;
+      } else {
+        totalExpense += record.amount;
+      }
+    });
+
+    const netBalance = totalIncome - totalExpense;
+
+    res.status(200).json({
+      totalIncome,
+      totalExpense,
+      netBalance,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
