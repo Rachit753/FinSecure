@@ -6,7 +6,8 @@ import {
     updateRecord,
     deleteRecord,
     getSummary,
-    getCategorySummary
+    getCategorySummary,
+    getMonthlyTrends
 } from "../controllers/recordController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -30,6 +31,13 @@ router.get(
     protect,
     allowRoles("viewer", "analyst", "admin"),
     getCategorySummary
+);
+
+router.get(
+    "/summary/monthly",
+    protect,
+    allowRoles("viewer", "analyst", "admin"),
+    getMonthlyTrends
 );
 
 export default router;

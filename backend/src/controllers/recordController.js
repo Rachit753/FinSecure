@@ -166,3 +166,44 @@ export const getCategorySummary = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// MONTHLY TRENDS
+export const getMonthlyTrends = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await Record.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(userId) },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+            month: { $month: "$date" },
+            type: "$type",
+          },
+          total: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    // Format data
+    const trends = {};
+
+    result.forEach((item) => {
+      const { year, month, type } = item._id;
+      const key = `${year}-${String(month).padStart(2, "0")}`;
+
+      if (!trends[key]) {
+        trends[key] = { month: key, income: 0, expense: 0 };
+      }
+
+      trends[key][type] = item.total;
+    });
+
+    res.status(200).json(Object.values(trends));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
