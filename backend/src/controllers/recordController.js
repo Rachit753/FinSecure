@@ -31,19 +31,14 @@ export const createRecord = async (req, res) => {
 
 export const getRecords = async (req, res) => {
   try {
-    const { type, category, startDate, endDate } = req.query;
+    const { type, category, startDate, endDate, page = 1, limit = 5 } = req.query;
 
     let filter = {
       user: req.user.id,
     };
 
-    if (type) {
-      filter.type = type;
-    }
-
-    if (category) {
-      filter.category = category;
-    }
+    if (type) filter.type = type;
+    if (category) filter.category = category;
 
     if (startDate || endDate) {
       filter.date = {};
@@ -51,9 +46,19 @@ export const getRecords = async (req, res) => {
       if (endDate) filter.date.$lte = new Date(endDate);
     }
 
-    const records = await Record.find(filter).sort({ date: -1 });
+    const skip = (page - 1) * limit;
+
+    const records = await Record.find(filter)
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    const total = await Record.countDocuments(filter);
 
     res.status(200).json({
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / limit),
       count: records.length,
       records,
     });
@@ -167,7 +172,6 @@ export const getCategorySummary = async (req, res) => {
   }
 };
 
-// MONTHLY TRENDS
 export const getMonthlyTrends = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -188,7 +192,6 @@ export const getMonthlyTrends = async (req, res) => {
       },
     ]);
 
-    // Format data
     const trends = {};
 
     result.forEach((item) => {
